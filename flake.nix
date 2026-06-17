@@ -25,7 +25,7 @@
         # `nix flake check` 相当の軽い動作確認用。
         legacyPackages = nurPkgs;
 
-        formatter = pkgs.nixfmt-rfc-style;
+        formatter = pkgs.nixfmt;
       }
     )
     // {
