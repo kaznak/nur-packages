@@ -24,7 +24,7 @@ buildNpmPackage rec {
     hash = "sha256-oE4zMH5KEH185Vdp0CE221sa9rJJw35jFLlfhTa3Sg4=";
   };
 
-  npmDepsHash = "sha256-rBlAzAnP9aif1tZ984AO4HftIJsDgLQ+02J3td4jcRg=";
+  npmDepsHash = "sha256-Eh2BQ8igbanQwyHEfAgmpfzlort15ywpXkcPeNE6+n8=";
   npmDepsFetcherVersion = 2;
   npmWorkspace = "packages/coding-agent";
   makeCacheWritable = true;
