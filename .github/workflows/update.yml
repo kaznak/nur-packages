@@ -1,0 +1,88 @@
+name: update
+
+on:
+  schedule:
+    # 毎週月曜 04:00 UTC (= JST 13:00)
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+    inputs:
+      package:
+        description: '更新する単一パッケージ (空なら matrix の全パッケージ)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# 補足: secrets.GITHUB_TOKEN で作られた PR は他の workflow を起動しないため、
+# 自動更新 PR で ci.yml を自動実行したい場合は repo scope の PAT を
+# secrets.NIX_UPDATE_TOKEN に登録すると下の token: で使われる。
+# 未設定なら GITHUB_TOKEN にフォールバック (PR は作られるが CI は手動再実行)。
+
+jobs:
+  update:
+    name: nix-update ${{ matrix.package }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - mantra
+          - eye
+          - pi-coding-agent
+          - goose
+          - goose-desktop
+          # git-appraise-web はタグなしのコミット固定なので自動更新対象外
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Skip if workflow_dispatch package filter set and mismatched
+        id: filter
+        run: |
+          want='${{ inputs.package }}'
+          have='${{ matrix.package }}'
+          if [ -n "$want" ] && [ "$want" != "$have" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Nix
+        if: steps.filter.outputs.skip == 'false'
+        uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - name: Run nix-update
+        if: steps.filter.outputs.skip == 'false'
+        # nix-update が flake attribute のバージョンとハッシュを書き換え、
+        # 変更があれば差分が working tree に残る。
+        # goose / goose-desktop は multi-arch だが nix-update は runner の
+        # アーキ (x86_64-linux) のハッシュのみ更新する。他アーキは PR で要確認。
+        run: |
+          nix run nixpkgs#nix-update -- --flake '${{ matrix.package }}'
+
+      - name: Create or update PR
+        if: steps.filter.outputs.skip == 'false'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.NIX_UPDATE_TOKEN || secrets.GITHUB_TOKEN }}
+          branch: update/${{ matrix.package }}
+          delete-branch: true
+          commit-message: "${{ matrix.package }}: update via nix-update"
+          title: "${{ matrix.package }}: update via nix-update"
+          body: |
+            Automated update for `${{ matrix.package }}` via
+            [`nix-update`](https://github.com/Mic92/nix-update).
+
+            - Review the version / hash diff.
+            - For multi-arch packages (`goose`, `goose-desktop`) confirm hashes for
+              architectures other than `x86_64-linux` were updated as needed
+              (nix-update only refreshes the runner's system).
+            - CI builds `ci.nix` buildPkgs; merge once green.
+          labels: |
+            automated
+            dependencies
