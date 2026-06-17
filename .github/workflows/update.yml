@@ -33,7 +33,11 @@ jobs:
           - pi-coding-agent
           - goose
           - goose-desktop
+          - doorstop
           # git-appraise-web はタグなしのコミット固定なので自動更新対象外
+          # 注: doorstop は src (v3.0.2) のみ nix-update 対象。
+          # default.nix 内の nixpkgs_24_11 / poetry2nix_24_11 pin は意図的固定で
+          # nix-update が触らない (24.11 系を保つ必要があるため)。
     steps:
       - uses: actions/checkout@v4
 

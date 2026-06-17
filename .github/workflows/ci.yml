@@ -38,4 +38,5 @@ jobs:
             .#eye \
             .#goose \
             .#goose-desktop \
-            .#pi-coding-agent
+            .#pi-coding-agent \
+            .#doorstop
