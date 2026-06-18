@@ -66,8 +66,7 @@ jobs:
         # 変更があれば差分が working tree に残る。
         # goose / goose-desktop は multi-arch だが nix-update は runner の
         # アーキ (x86_64-linux) のハッシュのみ更新する。他アーキは PR で要確認。
-        run: |
-          nix run nixpkgs#nix-update -- --flake '${{ matrix.package }}'
+        run: ./scripts/nix-update.sh '${{ matrix.package }}'
 
       - name: Create or update PR
         if: steps.filter.outputs.skip == 'false'
