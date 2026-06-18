@@ -4,6 +4,7 @@
 # All packages produced by the flake.
 PACKAGES=(
   git-appraise-web
+  go-trafilatura
   mantra
   eye
   goose
@@ -15,6 +16,7 @@ PACKAGES=(
 # Subset refreshable by nix-update. git-appraise-web is pinned to a commit
 # (no upstream tags) so it stays out of automated updates.
 NIX_UPDATE_PACKAGES=(
+  go-trafilatura
   mantra
   eye
   pi-coding-agent

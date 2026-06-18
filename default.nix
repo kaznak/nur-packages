@@ -23,6 +23,7 @@ let
 in
 {
   git-appraise-web = pkgs.callPackage ./pkgs/github-google-gitappraiseweb.nix { };
+  go-trafilatura = pkgs.callPackage ./pkgs/github-markusmobius-gotrafilatura.nix { };
   mantra = pkgs.callPackage ./pkgs/github-mhatzl-mantra.nix { };
   eye = pkgs.callPackage ./pkgs/github-eyereasoner-eye.nix { };
   goose = pkgs.callPackage ./pkgs/github-aaifgoose-goose.nix { };
