@@ -15,16 +15,16 @@
 
 buildNpmPackage rec {
   pname = "pi-coding-agent";
-  version = "0.73.0";
+  version = "0.79.6";
 
   src = fetchFromGitHub {
     owner = "badlogic";
     repo = "pi-mono";
     rev = "v${version}";
-    hash = "sha256-oE4zMH5KEH185Vdp0CE221sa9rJJw35jFLlfhTa3Sg4=";
+    hash = "sha256-ZJv4YCqt10DnuS3oCwwJ9Byix0u4CDFuiVaQd01Ryhs=";
   };
 
-  npmDepsHash = "sha256-Eh2BQ8igbanQwyHEfAgmpfzlort15ywpXkcPeNE6+n8=";
+  npmDepsHash = "sha256-hyr417eI7qtHcLhDweQKhl0KG4ukeWypgUEzqESTuaI=";
   npmDepsFetcherVersion = 2;
   npmWorkspace = "packages/coding-agent";
   makeCacheWritable = true;
@@ -44,7 +44,7 @@ buildNpmPackage rec {
 
   postPatch = ''
     substituteInPlace packages/ai/package.json \
-      --replace-fail '"build": "npm run generate-models && tsgo -p tsconfig.build.json"' \
+      --replace-fail '"build": "npm run generate-models && npm run generate-image-models && tsgo -p tsconfig.build.json"' \
                      '"build": "tsgo -p tsconfig.build.json"'
   '';
 

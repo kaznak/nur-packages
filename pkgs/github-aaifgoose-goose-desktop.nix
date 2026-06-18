@@ -37,11 +37,11 @@
 # 旧 block/goose は aaif-goose/goose へリダイレクトされる（org 名変更で同一リポジトリ）。
 # リダイレクトが将来切れても良いよう、URL は正準名 aaif-goose/goose を使う。
 let
-  version = "1.29.1";
+  version = "1.38.0";
 
   src = fetchurl {
     url = "https://github.com/aaif-goose/goose/releases/download/v${version}/goose_${version}_amd64.deb";
-    sha256 = "1fwkcqhhqcd655x3bggbj4kl99i971c1spavikavp65gn61q7x29";
+    sha256 = "sha256-aXpqLpAA6cGCLQskse29QEWqAXwFHnOo61TMYr9KWP4=";
   };
 
   runtimeLibs = [

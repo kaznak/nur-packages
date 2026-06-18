@@ -23,8 +23,8 @@ poetry2nix.mkPoetryApplication {
   projectDir = fetchFromGitHub {
     owner = "doorstop-dev";
     repo = "doorstop";
-    rev = "v3.0.2";
-    hash = "sha256-yCySvIoy8FVE2dGqmqDTSMW7HWgMiFpNW5ZVg1SIiRQ=";
+    rev = "v3.1";
+    hash = "sha256-qHY3a/o25e4WONPnF4YoQQW+zAQ/4FShlP99S+zJbys=";
   };
   preferWheels = true; # It was too difficult to build >_<.
   overrides = poetry2nix.defaultPoetryOverrides.extend (
