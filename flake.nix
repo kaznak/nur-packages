@@ -25,6 +25,9 @@
         # `nix flake check` 相当の軽い動作確認用。
         legacyPackages = nurPkgs;
 
+        # `nix develop` で just / nix-update などの開発ツールを揃える。
+        devShells.default = import ./devshell.nix { inherit pkgs; };
+
         formatter = pkgs.nixfmt;
       }
     )
