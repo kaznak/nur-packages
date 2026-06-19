@@ -22,7 +22,7 @@ let
   poetry2nixInstance_24_11 = import poetry2nix_24_11 { pkgs = pkgs_24_11; };
 in
 {
-  defuddle = pkgs.callPackage ./pkgs/github-kepano-defuddle.nix { };
+  defuddle = pkgs.callPackage ./pkgs/github-kaznak-defuddle.nix { };
   git-appraise-web = pkgs.callPackage ./pkgs/github-google-gitappraiseweb.nix { };
   go-trafilatura = pkgs.callPackage ./pkgs/github-markusmobius-gotrafilatura.nix { };
   mantra = pkgs.callPackage ./pkgs/github-mhatzl-mantra.nix { };

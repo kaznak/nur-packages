@@ -15,9 +15,9 @@ PACKAGES=(
 )
 
 # Subset refreshable by nix-update. git-appraise-web is pinned to a commit
-# (no upstream tags) so it stays out of automated updates.
+# (no upstream tags) so it stays out of automated updates. defuddle is
+# temporarily pinned to a kaznak fork branch commit pending an upstream PR.
 NIX_UPDATE_PACKAGES=(
-  defuddle
   go-trafilatura
   mantra
   eye
