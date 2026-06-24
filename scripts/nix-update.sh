@@ -11,8 +11,19 @@ here="$(dirname -- "$(readlink -f -- "$0")")"
 
 update_one() {
   local pkg="$1"
-  echo "=== nix-update $pkg ==="
-  nix run nixpkgs#nix-update -- --flake "$pkg"
+  local extra_args=()
+  # doorstop は poetry2nix 経由で build され、その評価が pyproject.toml を src から
+  # readFile する (IFD)。加えて mkPoetryApplication の meta.position が poetry2nix の
+  # default.nix を指すため、nix-update が「flake 内に無い」と sanitizePositions で
+  # 弾く。--src-only で重い eval を skip し、--override-filename で正しい更新先を
+  # 明示する (doorstop は cargoDeps 等の追加成果物を持たないため src 更新だけで十分)。
+  case "$pkg" in
+    doorstop)
+      extra_args+=(--src-only --override-filename pkgs/github-doorstopdev-doorstop.nix)
+      ;;
+  esac
+  echo "=== nix-update $pkg ${extra_args[*]} ==="
+  nix run nixpkgs#nix-update -- --flake "$pkg" "${extra_args[@]}"
 }
 
 if [ "$#" -gt 0 ]; then
