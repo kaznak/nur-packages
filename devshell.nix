@@ -1,5 +1,6 @@
 # Development shell used by `nix develop` (and `flake.nix` wires it in).
-# Hands the repo's helper scripts (scripts/) the tools they assume on PATH.
+# Provides the tools that `Justfile` recipes and ad-hoc nur-packages.json
+# inspection assume on PATH.
 {
   pkgs ? import <nixpkgs> { },
 }:
@@ -9,6 +10,5 @@ pkgs.mkShell {
     just
     nix-update
     nixfmt
-    shellcheck
   ];
 }

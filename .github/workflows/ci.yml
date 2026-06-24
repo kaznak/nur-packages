@@ -27,8 +27,8 @@ jobs:
             experimental-features = nix-command flakes
             accept-flake-config = true
 
+      # `nix flake check` builds every flake output for the current system
+      # (packages.x86_64-linux.* and checks.x86_64-linux.*), so an explicit
+      # "build all" step is redundant.
       - name: nix flake check
         run: nix flake check --print-build-logs
-
-      - name: Build all packages
-        run: ./scripts/build.sh

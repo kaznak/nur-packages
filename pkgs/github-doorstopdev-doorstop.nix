@@ -10,7 +10,8 @@
   (b) meta.position が poetry2nix 内 default.nix を指すため sanitizePositions で
   「flake 内に無い」と弾かれる。両者を回避するため --src-only と --override-filename
   を付ける必要があり、その引数は nur-packages.json (repo root) の doorstop エントリ
-  nixUpdateExtraArgs に集約されている (scripts/nix-update.sh が読んで付与する)。
+  nixUpdateExtraArgs に集約され、.github/workflows/update.yml の matrix から
+  nix-update に渡される。
 */
 
 {

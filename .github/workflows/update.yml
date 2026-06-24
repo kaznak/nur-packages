@@ -21,21 +21,21 @@ permissions:
 # 未設定なら GITHUB_TOKEN にフォールバック (PR は作られるが CI は手動再実行)。
 
 jobs:
-  # nur-packages.json から nixUpdate=true なパッケージ一覧を取り出し、
-  # update job の matrix に渡す。per-package 設定 (nix-update の追加引数等) は
-  # scripts/nix-update.sh 内で nur-packages.json を参照して解決するため、
-  # ここでは package 名だけ matrix に流す。
+  # nur-packages.json から nixUpdate=true なエントリを取り出し、
+  # {package, extraArgs} 形式の matrix を生成する。per-package の追加引数
+  # (--src-only 等) はここで JSON から取り出して matrix の値として流すため、
+  # 後続 job も他のレイヤも JSON を読む必要はない。
   setup:
     name: derive matrix from nur-packages.json
     runs-on: ubuntu-latest
     outputs:
-      packages: ${{ steps.matrix.outputs.packages }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v5
       - id: matrix
         run: |
-          packages=$(jq -c '[to_entries[] | select(.value.nixUpdate) | .key]' nur-packages.json)
-          echo "packages=$packages" >> "$GITHUB_OUTPUT"
+          matrix=$(jq -c '{include: [to_entries[] | select(.value.nixUpdate) | {package: .key, extraArgs: ((.value.nixUpdateExtraArgs // []) | join(" "))}]}' nur-packages.json)
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
 
   update:
     needs: setup
@@ -43,8 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        package: ${{ fromJson(needs.setup.outputs.packages) }}
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v5
 
@@ -67,13 +66,13 @@ jobs:
             experimental-features = nix-command flakes
             accept-flake-config = true
 
+      # nix-update が flake attribute のバージョンとハッシュを書き換え、
+      # 変更があれば差分が working tree に残る。
+      # matrix.extraArgs はクオートせず word-split させて args として流す
+      # (各値に空白を含まない前提)。
       - name: Run nix-update
         if: steps.filter.outputs.skip == 'false'
-        # nix-update が flake attribute のバージョンとハッシュを書き換え、
-        # 変更があれば差分が working tree に残る。
-        # per-package の追加引数 (--src-only 等) は nur-packages.json に記述、
-        # scripts/nix-update.sh が読み取って付与する。
-        run: ./scripts/nix-update.sh '${{ matrix.package }}'
+        run: nix run nixpkgs#nix-update -- --flake '${{ matrix.package }}' ${{ matrix.extraArgs }}
 
       - name: Create or update PR
         if: steps.filter.outputs.skip == 'false'
@@ -89,10 +88,11 @@ jobs:
             [`nix-update`](https://github.com/Mic92/nix-update).
 
             - Review the version / hash diff.
-            - For multi-arch packages confirm hashes for architectures other than
-              `x86_64-linux` were updated as needed (nix-update only refreshes the
-              runner's system). See `nur-packages.json` for per-package notes.
-            - CI builds `ci.nix` buildPkgs; merge once green.
+            - For multi-arch packages confirm hashes for architectures other
+              than `x86_64-linux` were updated as needed (nix-update only
+              refreshes the runner's system). See `nur-packages.json` for
+              per-package notes.
+            - CI builds every flake output via `nix flake check`; merge once green.
           labels: |
             automated
             dependencies
