@@ -47,7 +47,7 @@ jobs:
             echo "::error::package '$WANT' not found or nixUpdate=false in nur-packages.json"
             exit 1
           fi
-          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+          echo "matrix=$matrix" | tee -a "$GITHUB_OUTPUT"
 
   update:
     needs: setup
