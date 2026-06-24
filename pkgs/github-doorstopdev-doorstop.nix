@@ -5,13 +5,19 @@
   `poetry2nix = import <poetry2nix> { pkgs = <nixpkgs 24.11>; };`
   （本リポジトリでは default.nix が pin 済みの 24.11 / poetry2nix を注入する）
 
-  nix-update の特殊事情: poetry2nix の mkPoetryApplication は (a) pyproject.toml を src
-  から readFile するため IFD で nix-update のデフォルト strict 評価が落ちる、
-  (b) meta.position が poetry2nix 内 default.nix を指すため sanitizePositions で
-  「flake 内に無い」と弾かれる。両者を回避するため --src-only と --override-filename
-  を付ける必要があり、その引数は nur-packages.json (repo root) の doorstop エントリ
-  nixUpdateExtraArgs に集約され、.github/workflows/update.yml の matrix から
-  nix-update に渡される。
+  nix-update の特殊事情:
+  (1) poetry2nix の mkPoetryApplication は pyproject.toml を src から readFile する
+      ため、nix-update の eval が source derivation の realize を要求する (IFD)。
+      fresh CI runner では未 realize で eval が落ちるので、事前に `nix build` で
+      source を store に入れる必要がある。
+  (2) mkPoetryApplication の meta.position が poetry2nix 内 default.nix を指すため、
+      nix-update の sanitizePositions で「flake 内に無い」と弾かれる。
+      --override-filename で更新先を明示する必要がある。
+  (3) `--src-only` で eval を src 取得用に絞る (doorstop は cargoDeps 等を持たないため
+      src 更新のみで十分)。
+  これらの設定は nur-packages.json (repo root) の doorstop エントリに集約され
+  (`nixUpdatePreBuild`, `nixUpdateExtraArgs`)、.github/workflows/update.yml の
+  matrix 経由で workflow 側が解釈する。
 */
 
 {

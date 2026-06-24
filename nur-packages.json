@@ -29,11 +29,12 @@
   },
   "doorstop": {
     "nixUpdate": true,
+    "nixUpdatePreBuild": true,
     "nixUpdateExtraArgs": [
       "--src-only",
       "--override-filename",
       "pkgs/github-doorstopdev-doorstop.nix"
     ],
-    "note": "poetry2nix の IFD/sanitizePositions 回避のため special args 必要。詳細は pkgs/github-doorstopdev-doorstop.nix 冒頭コメント参照"
+    "note": "poetry2nix が pyproject.toml を src から readFile するため、nix-update の eval が src derivation を要求する (IFD)。fresh CI runner では未 realize で eval が落ちるので、nixUpdatePreBuild=true で nix-update 前に `nix build` して source を store に入れる。さらに mkPoetryApplication の meta.position が poetry2nix 内 default.nix を指すため sanitizePositions で弾かれるので --src-only と --override-filename も必要。詳細は pkgs/github-doorstopdev-doorstop.nix 冒頭コメント参照"
   }
 }

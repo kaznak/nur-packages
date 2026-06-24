@@ -41,7 +41,11 @@ jobs:
             {include: [
               to_entries[]
               | select(.value.nixUpdate and ($want == "" or .key == $want))
-              | {package: .key, extraArgs: ((.value.nixUpdateExtraArgs // []) | join(" "))}
+              | {
+                  package: .key,
+                  extraArgs: ((.value.nixUpdateExtraArgs // []) | join(" ")),
+                  preBuild: (.value.nixUpdatePreBuild // false)
+                }
             ]}' nur-packages.json)
           if [ -n "$WANT" ] && [ "$(echo "$matrix" | jq '.include | length')" = "0" ]; then
             echo "::error::package '$WANT' not found or nixUpdate=false in nur-packages.json"
@@ -65,6 +69,14 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes
             accept-flake-config = true
+
+      # poetry2nix 系のように nix-update の eval が IFD (readFile from src)
+      # を要求するパッケージは、fresh runner では source derivation が未 realize
+      # で eval が落ちる。nur-packages.json で nixUpdatePreBuild=true を指定した
+      # ものは事前に `nix build` で source 等を store に入れておく。
+      - name: Pre-build (realize sources for IFD-heavy packages)
+        if: matrix.preBuild
+        run: nix build --no-link '.#${{ matrix.package }}' --print-build-logs
 
       # nix-update が flake attribute のバージョンとハッシュを書き換え、
       # 変更があれば差分が working tree に残る。
