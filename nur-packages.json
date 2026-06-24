@@ -17,12 +17,12 @@
     "nixUpdate": true
   },
   "goose": {
-    "nixUpdate": true,
-    "note": "multi-arch だが nix-update は runner system (x86_64-linux) のみ更新"
+    "nixUpdate": false,
+    "note": "使用頻度が低く、再開時に必要なら手動更新する想定で自動更新対象外。再開時は nixUpdate=true に戻すと matrix に復帰する。multi-arch のため nix-update は runner system (x86_64-linux) のみ更新する点にも注意"
   },
   "goose-desktop": {
-    "nixUpdate": true,
-    "note": "multi-arch だが nix-update は runner system (x86_64-linux) のみ更新"
+    "nixUpdate": false,
+    "note": "使用頻度が低く、再開時に必要なら手動更新する想定で自動更新対象外。再開時は nixUpdate=true に戻すと matrix に復帰する。multi-arch のため nix-update は runner system (x86_64-linux) のみ更新する点にも注意"
   },
   "pi-coding-agent": {
     "nixUpdate": true
