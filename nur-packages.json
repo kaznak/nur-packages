@@ -1,0 +1,39 @@
+{
+  "defuddle": {
+    "nixUpdate": false,
+    "note": "kaznak fork の feat/cli-url-flag branch commit に temporarily pin、upstream PR merge 待ち"
+  },
+  "git-appraise-web": {
+    "nixUpdate": false,
+    "note": "タグなしのコミット固定なので自動更新対象外"
+  },
+  "go-trafilatura": {
+    "nixUpdate": true
+  },
+  "mantra": {
+    "nixUpdate": true
+  },
+  "eye": {
+    "nixUpdate": true
+  },
+  "goose": {
+    "nixUpdate": true,
+    "note": "multi-arch だが nix-update は runner system (x86_64-linux) のみ更新"
+  },
+  "goose-desktop": {
+    "nixUpdate": true,
+    "note": "multi-arch だが nix-update は runner system (x86_64-linux) のみ更新"
+  },
+  "pi-coding-agent": {
+    "nixUpdate": true
+  },
+  "doorstop": {
+    "nixUpdate": true,
+    "nixUpdateExtraArgs": [
+      "--src-only",
+      "--override-filename",
+      "pkgs/github-doorstopdev-doorstop.nix"
+    ],
+    "note": "poetry2nix の IFD/sanitizePositions 回避のため special args 必要。詳細は pkgs/github-doorstopdev-doorstop.nix 冒頭コメント参照"
+  }
+}

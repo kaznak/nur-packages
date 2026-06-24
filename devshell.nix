@@ -5,6 +5,7 @@
 }:
 pkgs.mkShell {
   packages = with pkgs; [
+    jq
     just
     nix-update
     nixfmt

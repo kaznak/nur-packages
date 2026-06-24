@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       package:
-        description: '更新する単一パッケージ (空なら matrix の全パッケージ)'
+        description: '更新する単一パッケージ (空なら全 nixUpdate=true パッケージ)'
         required: false
         default: ''
 
@@ -21,24 +21,30 @@ permissions:
 # 未設定なら GITHUB_TOKEN にフォールバック (PR は作られるが CI は手動再実行)。
 
 jobs:
+  # nur-packages.json から nixUpdate=true なパッケージ一覧を取り出し、
+  # update job の matrix に渡す。per-package 設定 (nix-update の追加引数等) は
+  # scripts/nix-update.sh 内で nur-packages.json を参照して解決するため、
+  # ここでは package 名だけ matrix に流す。
+  setup:
+    name: derive matrix from nur-packages.json
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.matrix.outputs.packages }}
+    steps:
+      - uses: actions/checkout@v5
+      - id: matrix
+        run: |
+          packages=$(jq -c '[to_entries[] | select(.value.nixUpdate) | .key]' nur-packages.json)
+          echo "packages=$packages" >> "$GITHUB_OUTPUT"
+
   update:
+    needs: setup
     name: nix-update ${{ matrix.package }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        package:
-          - mantra
-          - eye
-          - pi-coding-agent
-          - goose
-          - goose-desktop
-          - doorstop
-          # git-appraise-web はタグなしのコミット固定なので自動更新対象外
-          # 注: doorstop は scripts/nix-update.sh で --src-only を付けて呼ぶ
-          # (poetry2nix の IFD で nix-update デフォルト評価が落ちるため)。
-          # default.nix 内の nixpkgs_24_11 / poetry2nix_24_11 pin は意図的固定で
-          # nix-update が触らない (24.11 系を保つ必要があるため)。
+        package: ${{ fromJson(needs.setup.outputs.packages) }}
     steps:
       - uses: actions/checkout@v5
 
@@ -65,8 +71,8 @@ jobs:
         if: steps.filter.outputs.skip == 'false'
         # nix-update が flake attribute のバージョンとハッシュを書き換え、
         # 変更があれば差分が working tree に残る。
-        # goose / goose-desktop は multi-arch だが nix-update は runner の
-        # アーキ (x86_64-linux) のハッシュのみ更新する。他アーキは PR で要確認。
+        # per-package の追加引数 (--src-only 等) は nur-packages.json に記述、
+        # scripts/nix-update.sh が読み取って付与する。
         run: ./scripts/nix-update.sh '${{ matrix.package }}'
 
       - name: Create or update PR
@@ -83,9 +89,9 @@ jobs:
             [`nix-update`](https://github.com/Mic92/nix-update).
 
             - Review the version / hash diff.
-            - For multi-arch packages (`goose`, `goose-desktop`) confirm hashes for
-              architectures other than `x86_64-linux` were updated as needed
-              (nix-update only refreshes the runner's system).
+            - For multi-arch packages confirm hashes for architectures other than
+              `x86_64-linux` were updated as needed (nix-update only refreshes the
+              runner's system). See `nur-packages.json` for per-package notes.
             - CI builds `ci.nix` buildPkgs; merge once green.
           labels: |
             automated

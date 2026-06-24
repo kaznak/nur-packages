@@ -4,6 +4,13 @@
   呼び出し側は 24.11 で構成した poetry2nix インスタンスを渡すこと:
   `poetry2nix = import <poetry2nix> { pkgs = <nixpkgs 24.11>; };`
   （本リポジトリでは default.nix が pin 済みの 24.11 / poetry2nix を注入する）
+
+  nix-update の特殊事情: poetry2nix の mkPoetryApplication は (a) pyproject.toml を src
+  から readFile するため IFD で nix-update のデフォルト strict 評価が落ちる、
+  (b) meta.position が poetry2nix 内 default.nix を指すため sanitizePositions で
+  「flake 内に無い」と弾かれる。両者を回避するため --src-only と --override-filename
+  を付ける必要があり、その引数は nur-packages.json (repo root) の doorstop エントリ
+  nixUpdateExtraArgs に集約されている (scripts/nix-update.sh が読んで付与する)。
 */
 
 {
