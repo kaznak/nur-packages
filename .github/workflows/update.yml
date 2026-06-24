@@ -13,16 +13,10 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
-
-# 補足: secrets.GITHUB_TOKEN で作られた PR は他の workflow を起動しないため、
-# 自動更新 PR で ci.yml を自動実行したい場合は repo scope の PAT を
-# secrets.NIX_UPDATE_TOKEN に登録すると下の token: で使われる。
-# 未設定なら GITHUB_TOKEN にフォールバック (PR は作られるが CI は手動再実行)。
 
 jobs:
   # nur-packages.json から nixUpdate=true なエントリを取り出して
-  # {package, extraArgs} 形式の matrix を生成する。
+  # {package, extraArgs, preBuild} 形式の matrix を生成する。
   # workflow_dispatch の inputs.package が指定されていれば、その 1 件だけに
   # 絞った matrix を生成し、後続 job 側での per-job skip 判定をなくす。
   # 不正な package 名 (未登録 or nixUpdate=false) はここで明示的に fail。
@@ -58,6 +52,9 @@ jobs:
     name: nix-update ${{ matrix.package }}
     runs-on: ubuntu-latest
     strategy:
+      # 各 job が main に直接 push するため逐次化する (concurrent push の
+      # 衝突回避)。週次 cron なので順次でも数十分以内。
+      max-parallel: 1
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     steps:
@@ -85,24 +82,18 @@ jobs:
       - name: Run nix-update
         run: nix run nixpkgs#nix-update -- --flake '${{ matrix.package }}' ${{ matrix.extraArgs }}
 
-      - name: Create or update PR
-        uses: peter-evans/create-pull-request@v8
-        with:
-          token: ${{ secrets.NIX_UPDATE_TOKEN || secrets.GITHUB_TOKEN }}
-          branch: update/${{ matrix.package }}
-          delete-branch: true
-          commit-message: "${{ matrix.package }}: update via nix-update"
-          title: "${{ matrix.package }}: update via nix-update"
-          body: |
-            Automated update for `${{ matrix.package }}` via
-            [`nix-update`](https://github.com/Mic92/nix-update).
-
-            - Review the version / hash diff.
-            - For multi-arch packages confirm hashes for architectures other
-              than `x86_64-linux` were updated as needed (nix-update only
-              refreshes the runner's system). See `nur-packages.json` for
-              per-package notes.
-            - CI builds every flake output via `nix flake check`; merge once green.
-          labels: |
-            automated
-            dependencies
+      # GITHUB_TOKEN (contents: write) で main に直接 push する。
+      # PAT 不要、PR 経由のセレモニーも省略。前段の matrix が逐次なので、
+      # 直前の job が main を進めていても pull --rebase で吸収できる。
+      - name: Commit and push update
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes from nix-update, skipping commit."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m "${{ matrix.package }}: update via nix-update"
+          git pull --rebase origin main
+          git push origin main
