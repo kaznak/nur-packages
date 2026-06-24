@@ -39,7 +39,7 @@ jobs:
           # default.nix 内の nixpkgs_24_11 / poetry2nix_24_11 pin は意図的固定で
           # nix-update が触らない (24.11 系を保つ必要があるため)。
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Skip if workflow_dispatch package filter set and mismatched
         id: filter
