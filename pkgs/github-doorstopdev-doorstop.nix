@@ -13,8 +13,6 @@
   (2) mkPoetryApplication の meta.position が poetry2nix 内 default.nix を指すため、
       nix-update の sanitizePositions で「flake 内に無い」と弾かれる。
       --override-filename で更新先を明示する必要がある。
-  (3) `--src-only` で eval を src 取得用に絞る (doorstop は cargoDeps 等を持たないため
-      src 更新のみで十分)。
   これらの設定は nur-packages.json (repo root) の doorstop エントリに集約され
   (`nixUpdatePreBuild`, `nixUpdateExtraArgs`)、.github/workflows/update.yml の
   matrix 経由で workflow 側が解釈する。
