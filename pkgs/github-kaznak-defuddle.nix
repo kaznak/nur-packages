@@ -15,8 +15,8 @@ buildNpmPackage rec {
   src = fetchFromGitHub {
     owner = "kaznak";
     repo = "defuddle";
-    rev = "0c378ef68247c507b9b54871b458fb8d4c744523";
-    hash = "sha256-BksKb9Oz8Lz/guLZU8WLnw1DH+jZTEcV9gXmcsABx1k=";
+    rev = "cba0806b247f49f759bfaf0a33d9924c5edfeca9";
+    hash = "sha256-YWyU3XC7EKfXS1FTFxMwGz2CZIXRa8GfGl0U7T8ZAgU=";
   };
 
   npmDepsHash = "sha256-3YxwAyrQrxU0ADjyuQmOpxGRtJ9HgTDubvhH8Tr4aCA=";
