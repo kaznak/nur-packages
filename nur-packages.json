@@ -1,7 +1,7 @@
 {
   "defuddle": {
     "nixUpdate": false,
-    "note": "kaznak fork の feat/cli-url-flag branch commit に temporarily pin、upstream PR merge 待ち"
+    "note": "kaznak fork の develop branch (= feat/cli-url-flag + feat/cli-extractor-arg) commit に temporarily pin、upstream PR merge 待ち"
   },
   "git-appraise-web": {
     "nixUpdate": false,
