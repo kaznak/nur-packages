@@ -30,6 +30,7 @@ in
   goose = pkgs.callPackage ./pkgs/github-aaifgoose-goose.nix { };
   goose-desktop = pkgs.callPackage ./pkgs/github-aaifgoose-goose-desktop.nix { };
   pi-coding-agent = pkgs.callPackage ./pkgs/pi-coding-agent.nix { };
+  pdf-to-md = pkgs.callPackage ./pkgs/pdf-to-md.nix { };
 
   doorstop = pkgs.callPackage ./pkgs/github-doorstopdev-doorstop.nix {
     poetry2nix = poetry2nixInstance_24_11;
