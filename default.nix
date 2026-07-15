@@ -25,4 +25,6 @@
   goose-desktop = pkgs.callPackage ./pkgs/github-aaifgoose-goose-desktop.nix { };
   pi-coding-agent = pkgs.callPackage ./pkgs/pi-coding-agent.nix { };
   pdf-to-md = pkgs.callPackage ./pkgs/pdf-to-md.nix { };
+  wardleytogo = pkgs.callPackage ./pkgs/github-owulveryck-wardleytogo.nix { };
+  wtg-playground = pkgs.callPackage ./pkgs/github-owulveryck-wardleytogo-playground.nix { };
 }
