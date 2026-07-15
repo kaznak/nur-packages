@@ -35,5 +35,13 @@
       "pkgs/github-doorstopdev-doorstop.nix"
     ],
     "note": "poetry2nix が pyproject.toml を src から readFile するため、nix-update の eval が src derivation を要求する (IFD)。fresh CI runner では未 realize で eval が落ちるので、nixUpdatePreBuild=true で nix-update 前に `nix build` して source を store に入れる。さらに mkPoetryApplication の meta.position が poetry2nix 内 default.nix を指すため sanitizePositions で弾かれるので --override-filename も必要。詳細は pkgs/github-doorstopdev-doorstop.nix 冒頭コメント参照"
+  },
+  "wardleytogo": {
+    "nixUpdate": false,
+    "note": "v1.15.1 に pin。wtg-playground と同じ rev/hash を共有するため (両者とも github-owulveryck-wardleytogo(-playground).nix)、自動更新すると片方だけ動いて desync する。更新時は両ファイルの rev/hash を揃えて手動で bump する"
+  },
+  "wtg-playground": {
+    "nixUpdate": false,
+    "note": "wardleytogo と同じ upstream rev/hash を共有する合成パッケージ (buildGoModule で GOOS=js GOARCH=wasm の main.wasm を作り、exp/ui の静的アセット + Go 配布物の wasm_exec.js と合成)。nix-update が扱う version 属性を持たないので自動更新対象外。更新は wardleytogo と揃えて手動で"
   }
 }
