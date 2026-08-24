@@ -11,13 +11,13 @@
 # `swipl -x eye.pvm -- "$@"` で起動するラッパーを作成する。
 stdenv.mkDerivation rec {
   pname = "eye";
-  version = "11.24.4";
+  version = "11.24.5";
 
   src = fetchFromGitHub {
     owner = "eyereasoner";
     repo = "eye";
     rev = "v${version}";
-    hash = "sha256-DKpKu1ELN68Wfd6MoAE3nWU414MoukEZRInUQB96sWU=";
+    hash = "sha256-RSgmflEhiC2N9Ew9/LT1WpNru0MNQRxSFhTQhyVqKIQ=";
   };
 
   nativeBuildInputs = [
