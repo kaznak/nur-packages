@@ -6,7 +6,7 @@
 
 buildGoModule rec {
   pname = "go-trafilatura";
-  version = "2.2.1";
+  version = "2.2.5";
   meta = with lib; {
     description = "Go port of trafilatura: web text extraction CLI/library";
     homepage = "https://github.com/markusmobius/go-trafilatura";
@@ -17,8 +17,8 @@ buildGoModule rec {
     owner = "markusmobius";
     repo = "go-trafilatura";
     rev = "v${version}";
-    hash = "sha256-kI9wA057fxl/JRrUDtxnfi3+Se57+WGwar/cyMKy0F8=";
+    hash = "sha256-9z4Z5dQT6hrhN1nvC5v/4BC2kRiHDqRzJmi9GsU60X4=";
   };
-  vendorHash = "sha256-Gfni7o37q0TQkN0qbQCRkg6PJkKwQgXMZZkZwJ8DUkU=";
+  vendorHash = "sha256-V02V9vxtFVwj/KKc0166bS4OWVg5RiSj9j13Gm0iLcA=";
   subPackages = [ "cmd/go-trafilatura" ];
 }
