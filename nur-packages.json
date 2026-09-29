@@ -43,5 +43,9 @@
   "wtg-playground": {
     "nixUpdate": false,
     "note": "wardleytogo と同じ upstream rev/hash を共有する合成パッケージ (buildGoModule で GOOS=js GOARCH=wasm の main.wasm を作り、exp/ui の静的アセット + Go 配布物の wasm_exec.js と合成)。nix-update が扱う version 属性を持たないので自動更新対象外。更新は wardleytogo と揃えて手動で"
+  },
+  "pythermalcamera": {
+    "nixUpdate": false,
+    "note": "上流は 2023-07 で更新停止・タグなしのコミット固定なので自動更新対象外"
   }
 }

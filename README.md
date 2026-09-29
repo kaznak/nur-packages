@@ -17,6 +17,7 @@ kaznak のパッケージ集。nixpkgs に存在しない / 自前ビルドし�
 | `goose` | block/goose AI エージェント CLI | fetchurl バイナリ |
 | `goose-desktop` | goose のデスクトップアプリ | .deb 展開 |
 | `pi-coding-agent` | pi - 最小構成のターミナルコーディングエージェント | buildNpmPackage |
+| `pythermalcamera` | TOPDON TC001 等の UVC サーモカメラの熱画像ビューア (PyThermalCamera、OpenCV 4.13 向けの修正入り) | stdenvNoCC + makeWrapper (python3 + opencv4Full) |
 | `doorstop` | バージョン管理による要求管理 | poetry2nix (pin: nixpkgs 24.11) |
 | `wardleytogo` | wtg2svg - WTG2 DSL で書いた Wardley Map を SVG に変換する CLI | buildGoModule |
 | `wtg-playground` | WTG2 playground (WebAssembly) を静的配信して開くラッパ (`wtg-playground [--port PORT]`)。CodeMirror を fetchurl でベンダリングし CDN 依存ゼロ | writeShellApplication + buildGoModule (GOOS=js GOARCH=wasm) + fetchurl |
