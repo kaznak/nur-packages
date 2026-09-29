@@ -43,6 +43,16 @@ stdenvNoCC.mkDerivation {
   postPatch = ''
     substituteInPlace src/tc001v4.2.py \
       --replace-fail 'cap.set(cv2.CAP_PROP_CONVERT_RGB, False)' 'cap.set(cv2.CAP_PROP_CONVERT_RGB, 0.0)'
+
+    # NumPy 2 (NEP 50) では uint8 のスカラーに Python の int を掛けても広がらず、
+    # lo*256 が OverflowError になる。温度計算に入る uint8 の値を int にしておく。
+    substituteInPlace src/tc001v4.2.py \
+      --replace-fail 'hi = thdata[96][128][0]' 'hi = int(thdata[96][128][0])' \
+      --replace-fail 'lo = thdata[96][128][1]' 'lo = int(thdata[96][128][1])' \
+      --replace-fail 'lomax = thdata[...,1].max()' 'lomax = int(thdata[...,1].max())' \
+      --replace-fail 'himax = thdata[mcol][mrow][0]' 'himax = int(thdata[mcol][mrow][0])' \
+      --replace-fail 'lomin = thdata[...,1].min()' 'lomin = int(thdata[...,1].min())' \
+      --replace-fail 'himin = thdata[lcol][lrow][0]' 'himin = int(thdata[lcol][lrow][0])'
   '';
 
   dontBuild = true;
